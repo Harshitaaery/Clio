@@ -4,8 +4,9 @@ import java.util.Scanner;
 import src.main.java.com.clio.model.Task;
 import src.main.java.com.clio.service.TaskManager;
 
+
 public class Main {
-   private static Scanner scanner = new Scanner(System.in);
+    private static Scanner scanner = new Scanner(System.in);
     private static TaskManager manager = new TaskManager();
     private static int taskCounter = 1; // auto-increment task IDs
 
@@ -13,6 +14,10 @@ public class Main {
         int choice;
         do {
             showMenu();
+            while (!scanner.hasNextInt()) {
+                System.out.println("Please enter a valid number.");
+                scanner.nextLine();
+            }
             choice = scanner.nextInt();
             scanner.nextLine(); // consume newline
 
@@ -38,20 +43,39 @@ public class Main {
     }
 
     private static void addTask() {
-        System.out.print("Enter title: ");
-        String title = scanner.nextLine();
+        String title;
+        do {
+            System.out.print("Enter title: ");
+            title = scanner.nextLine().trim();
+            if (title.isEmpty()) {
+                System.out.println("Title cannot be empty.");
+            }
+        } while (title.isEmpty());
 
-        System.out.print("Enter description: ");
-        String description = scanner.nextLine();
+        String description;
+        do {
+            System.out.print("Enter description: ");
+            description = scanner.nextLine().trim();
+            if (description.isEmpty()) {
+                System.out.println("Description cannot be empty.");
+            }
+        } while (description.isEmpty());
 
-        System.out.print("Enter due date (yyyy-mm-dd): ");
-        String dateStr = scanner.nextLine();
-        LocalDate dueDate = LocalDate.parse(dateStr);
+        LocalDate dueDate = null;
+        while (dueDate == null) {
+            System.out.print("Enter due date (yyyy-mm-dd): ");
+            String dateStr = scanner.nextLine();
+            try {
+                dueDate = LocalDate.parse(dateStr);
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date format. Try again.");
+            }
+        }
 
         Task task = new Task(taskCounter++, title, description, dueDate);
         manager.addTask(task);
 
-        System.out.println("✅ Task added successfully!");
+        System.out.println("Task added successfully!");
     }
 
     private static void viewTasks() {
@@ -60,28 +84,42 @@ public class Main {
 
     private static void updateTaskStatus() {
         System.out.print("Enter Task ID to update: ");
+        while (!scanner.hasNextInt()) {
+            System.out.println("Please enter a valid number.");
+            scanner.nextLine();
+        }
         int id = scanner.nextInt();
         scanner.nextLine();
 
         Task task = manager.getTaskById(id);
         if (task == null) {
-            System.out.println("❌ Task not found.");
+            System.out.println("Task not found.");
             return;
         }
 
-        System.out.print("Enter new status (TODO, IN_PROGRESS, DONE): ");
-        String status = scanner.nextLine();
-        task.setStatus(status);
+        String status;
+        do {
+            System.out.print("Enter new status (TODO, IN_PROGRESS, DONE): ");
+            status = scanner.nextLine().trim().toUpperCase();
+            if (!(status.equals("TODO") || status.equals("IN_PROGRESS") || status.equals("DONE"))) {
+                System.out.println("Invalid status. Please choose TODO, IN_PROGRESS, or DONE.");
+            }
+        } while (!(status.equals("TODO") || status.equals("IN_PROGRESS") || status.equals("DONE")));
 
-        System.out.println("✅ Task status updated!");
+        task.setStatus(status);
+        System.out.println("Task status updated!");
     }
 
     private static void deleteTask() {
         System.out.print("Enter Task ID to delete: ");
+        while (!scanner.hasNextInt()) {
+            System.out.println("Please enter a valid number.");
+            scanner.nextLine();
+        }
         int id = scanner.nextInt();
         scanner.nextLine();
 
         manager.removeTask(id);
-        System.out.println("✅ Task deleted (if it existed).");
+        System.out.println("Task deleted (if it existed).");
     }
 }
