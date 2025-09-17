@@ -3,12 +3,12 @@ import java.time.LocalDate;
 import java.util.Scanner;
 import src.main.java.com.clio.model.Task;
 import src.main.java.com.clio.service.TaskManager;
-
+import java.time.format.DateTimeParseException;
 
 public class Main {
     private static Scanner scanner = new Scanner(System.in);
     private static TaskManager manager = new TaskManager();
-    private static int taskCounter = 1; // auto-increment task IDs
+    private static int taskCounter = 1;
 
     public static void main(String[] args) {
         int choice;
@@ -19,17 +19,19 @@ public class Main {
                 scanner.nextLine();
             }
             choice = scanner.nextInt();
-            scanner.nextLine(); // consume newline
+            scanner.nextLine();
 
             switch (choice) {
                 case 1 -> addTask();
                 case 2 -> viewTasks();
                 case 3 -> updateTaskStatus();
                 case 4 -> deleteTask();
-                case 5 -> System.out.println("Exiting... Bye!");
+                case 5 -> filterTasksByStatus();
+                case 6 -> sortTasksMenu();
+                case 7 -> System.out.println("Exiting... Bye!");
                 default -> System.out.println("Invalid choice. Try again.");
             }
-        } while (choice != 5);
+        } while (choice != 7);
     }
 
     private static void showMenu() {
@@ -38,7 +40,9 @@ public class Main {
         System.out.println("2. View All Tasks");
         System.out.println("3. Update Task Status");
         System.out.println("4. Delete Task");
-        System.out.println("5. Exit");
+        System.out.println("5. Filter Tasks by Status");
+        System.out.println("6. Sort Tasks");
+        System.out.println("7. Exit");
         System.out.print("Enter your choice: ");
     }
 
@@ -47,18 +51,14 @@ public class Main {
         do {
             System.out.print("Enter title: ");
             title = scanner.nextLine().trim();
-            if (title.isEmpty()) {
-                System.out.println("Title cannot be empty.");
-            }
+            if (title.isEmpty()) System.out.println("Title cannot be empty.");
         } while (title.isEmpty());
 
         String description;
         do {
             System.out.print("Enter description: ");
             description = scanner.nextLine().trim();
-            if (description.isEmpty()) {
-                System.out.println("Description cannot be empty.");
-            }
+            if (description.isEmpty()) System.out.println("Description cannot be empty.");
         } while (description.isEmpty());
 
         LocalDate dueDate = null;
@@ -74,7 +74,6 @@ public class Main {
 
         Task task = new Task(taskCounter++, title, description, dueDate);
         manager.addTask(task);
-
         System.out.println("Task added successfully!");
     }
 
@@ -121,5 +120,25 @@ public class Main {
 
         manager.removeTask(id);
         System.out.println("Task deleted (if it existed).");
+    }
+
+    private static void filterTasksByStatus() {
+        System.out.print("Enter status to filter (TODO, IN_PROGRESS, DONE): ");
+        String status = scanner.nextLine().trim().toUpperCase();
+        manager.displayTasksByStatus(status);
+    }
+
+    private static void sortTasksMenu() {
+        System.out.println("1. Sort by Due Date");
+        System.out.println("2. Sort by Title");
+        System.out.print("Choose sorting option: ");
+        int option = scanner.nextInt();
+        scanner.nextLine();
+
+        switch (option) {
+            case 1 -> manager.sortTasksByDueDate();
+            case 2 -> manager.sortTasksByTitle();
+            default -> System.out.println("Invalid option.");
+        }
     }
 }

@@ -1,5 +1,7 @@
 package src.main.java.com.clio.service;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import src.main.java.com.clio.model.Task;
 
@@ -10,17 +12,16 @@ public class TaskManager {
         tasks = new ArrayList<>();
     }
 
-    // Add a new task
     public void addTask(Task task) {
         tasks.add(task);
     }
 
-    // Remove task by ID
+    // remove by id
     public void removeTask(int id) {
         tasks.removeIf(t -> t.getId() == id);
     }
 
-    // Find a task by ID
+    // find by id
     public Task getTaskById(int id) {
         for (Task t : tasks) {
             if (t.getId() == id) {
@@ -30,7 +31,7 @@ public class TaskManager {
         return null;
     }
 
-    // Show all tasks
+    
     public void displayAllTasks() {
         if (tasks.isEmpty()) {
             System.out.println("No tasks available.");
@@ -40,5 +41,31 @@ public class TaskManager {
             t.displayTask();
         }
     }
+
+    public List<Task> getTasksByStatus(TaskStatus status) {
+    return tasks.stream()
+                .filter(task -> task.getStatus() == status)
+                .toList();
+}
+
+public List<Task> getOverdueTasks() {
+    LocalDate today = LocalDate.now();
+    return tasks.stream()
+                .filter(task -> task.getDueDate().isBefore(today))
+                .toList();
+}
+
+public List<Task> getTasksSortedByDueDate() {
+    return tasks.stream()
+                .sorted(Comparator.comparing(Task::getDueDate))
+                .toList();
+}
+
+public List<Task> getTasksSortedByTitle() {
+    return tasks.stream()
+                .sorted(Comparator.comparing(Task::getTitle))
+                .toList();
+}
+
     
 }

@@ -2,14 +2,13 @@ package src.main.java.com.clio.model;
 import java.time.LocalDate;
 
 public class Task {
-    // Fields (Encapsulation: keep private)
+    // private so it can't be modified directly for safety
     private int id;
     private String title;
     private String description;
     private LocalDate dueDate;
     private String status; // could be "TODO", "IN_PROGRESS", "DONE"
 
-    // Constructor
     public Task(int id, String title, String description, LocalDate dueDate) {
         this.id = id;
         this.title = title;
@@ -18,7 +17,6 @@ public class Task {
         this.status = "TODO"; // default when created
     }
 
-    // Getters and Setters
     public int getId() { return id; }
     public String getTitle() { return title; }
     public String getDescription() { return description; }
@@ -30,7 +28,6 @@ public class Task {
     public void setDueDate(LocalDate dueDate) { this.dueDate = dueDate; }
     public void setStatus(String status) { this.status = status; }
 
-    // Custom methods
     public void markAsDone() {
         this.status = "DONE";
     }
